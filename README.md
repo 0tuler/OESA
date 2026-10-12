@@ -108,4 +108,4 @@ python job_exec.py \
 
 ```
 
-Toda essa execução pode ser mantida em um arquivo sh.
+Toda essa execução pode ser mantida em um arquivo sh, um exemplo prático pode ser encontrado em `run.sh`.
