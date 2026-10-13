@@ -29,13 +29,17 @@ O sistema é dividido em 4 scripts principais:
 
 ---
 
-## Instalação 
+## Instalação (WIP)
 
 ```bash
 
 git clone https://github.com/0tuler/OESA.git
 
 pip -r OESA/requirements.txt
+
+mv OESA/* ./
+
+rm -rf OESA
 
 ```
 
@@ -62,15 +66,15 @@ O script `job_exec.py` é o ponto de entrada da ferramenta. Ele deve ser executa
 | | `--modo` | Define a API paralela. Suporta `mpi`, `openmp` ou `openoff` (para GPUs). | `mpi` |
 | | `--nprocs` | Número de Processos/Threads a testar, passados entre aspas duplas e separados por espaço. | `"1 2 4 8 16 24 32"` |
 | | `--args` | Argumentos textuais que devem ser repassados diretamente ao binário em teste. | `""` |
-| | `--preload` | Bibliotecas ou strings de pré-carregamento (ex: `LD_PRELOAD=...`) para o run. | `""` |
+| | `--preload` | Bibliotecas ou strings de pré-carregamento (ex: `LD_PRELOAD=...`) para o run. (WIP) | `""` |
 
 ### Configurações Específicas de Hardware e SLURM
 | Opção | Comando Longo | Descrição |
 | :--- | :--- | :--- |
 | | `--mem` | Quantidade de memória solicitada no SLURM (ex: `16G`). |
 | | `--batch_script` | Nome/Caminho de um script `.sh` customizado que sobrepõe o gerado automaticamente. |
-| | `--gpus` | (Obrigatório se `--modo=openoff`) Número de GPUs solicitadas. |
-| | `--teams` | (Obrigatório se `--modo=openoff`) Configura o número de times na diretiva Offload. |
+| | `--gpus` | (Obrigatório se `--modo=openoff`) Número de GPUs solicitadas. (WIP) |
+| | `--teams` | (Obrigatório se `--modo=openoff`) Configura o número de times na diretiva Offload. (WIP) |
 | | `--omp_procbind`| Define como as threads OpenMP devem estar ligadas no SO. (Padrão: `close`) |
 | | `--omp_places` | Determina em quais estruturas alocar (Padrão: `cores`). |
 
@@ -79,14 +83,14 @@ O script `job_exec.py` é o ponto de entrada da ferramenta. Ele deve ser executa
 | :--- | :--- | :--- |
 | | `--extra_files` | Lista de arquivos (separados por espaço) que devem ser copiados junto com o executável para o diretório temporário (*SCRATCH*). |
 | | `--info` | Texto adicional que será acrescentado ao final do assunto no e-mail de notificação. |
-| | `--perf` | *Flag*: Se inserido, avisa o script de batch para rodar a extração de hardware `perf stat`. |
+| | `--perf` | *Flag*: Se inserido, avisa o script de batch para rodar a extração de hardware `perf stat`. (WIP) |
 | | `--just_email` | *Flag*: Pula a geração de gráficos e filtragem de amostras, apenas enviando os dados puros extraídos para o e-mail cadastrado. |
 
 ---
 
 ## Exemplo de Uso
 
-Um exemplo de coleta de desempenho de um programa OpenMP local, com 10 amostras, passando um arquivo extra (`entrada.txt`) usando de 1 até 16 threads:
+Um exemplo de coleta de desempenho de um programa OpenMP no slurm, com 10 amostras, passando um arquivo extra (`entrada.txt`) usando de 1 até 16 threads:
 
 ```bash
 # Setar variáveis
@@ -98,10 +102,10 @@ python job_exec.py \
 -n teste_openmp\
 -p ./matriz_mult\
 --header "N,Tempo" \
-  --sequana default_seq\
+  --sequana sequana_cpu_dev \
   -a 10\
   --passo 5\
-  --tipo local\
+  --tipo slurm\
   --modo openmp \
   --nprocs "1 2 4 8 16"\
   --extra_files entrada.txt
