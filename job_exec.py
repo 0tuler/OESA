@@ -61,7 +61,7 @@ def build_command_for_iteration(
     Constroi o comando para rodar uma iteração.
     Retorna uma lista pronta para subprocess.run.
     """
-    sbatch_opts = ["sbatch"]
+    sbatch_opts = []
 
     if args.exclusive:
         sbatch_opts.append("--exclusive")
@@ -97,7 +97,8 @@ def build_command_for_iteration(
             script = args.batch_script
 
         cmd = (
-            sbatch_opts
+            ["sbatch"]
+            + sbatch_opts
             + [
                 script,
                 args.exec_name,
@@ -107,6 +108,7 @@ def build_command_for_iteration(
                 args.sequana,
             ]
         )
+
         if args.modo == "openoff":
             cmd.extend([str(args.teams), str(nproc)])
 
@@ -440,7 +442,7 @@ def parse_and_validate() -> JobConfig:
     parser.add_argument("--nprocs", default="1 2 4 8 16 24 32 48")
     parser.add_argument("--teams", type=int)
     parser.add_argument("--gpus", type=int)
-    
+
     # Argumento extra_files recebe múltiplos valores para copiar
     parser.add_argument(
         "--extra_files",
