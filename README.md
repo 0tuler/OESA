@@ -63,8 +63,8 @@ O script `job_exec.py` é o ponto de entrada da ferramenta. Ele deve ser executa
 | `-a` | `--amostras` | Número **total** de execuções/amostras a serem coletadas. | `10` |
 | | `--passo` | Quantidade de repetições efetuadas a cada submissão (divide a amostragem em blocos menores). | `5` |
 | | `--tipo` | Onde os jobs vão executar: `slurm` (fila no cluster) ou `local` (máquina local). | `slurm` |
-| | `--modo` | Define a API paralela. Suporta `mpi`, `openmp` ou `openoff` (para GPUs). | `mpi` |
-| | `--nprocs` | Número de Processos/Threads a testar, passados entre aspas duplas e separados por espaço. | `"1 2 4 8 16 24 32"` |
+| | `--modo` | Define a API paralela. Suporta `mpi`, `openmp` ou `openoff` (para GPUs). | `openmp` |
+| | `--nprocs` | Número de Processos/Threads a testar, passados entre aspas duplas e separados por espaço. | `"1 2 4 8 16 24 32 48"` |
 | | `--args` | Argumentos textuais que devem ser repassados diretamente ao binário em teste. | `""` |
 | | `--preload` | Bibliotecas ou strings de pré-carregamento (ex: `LD_PRELOAD=...`) para o run. (WIP) | `""` |
 
@@ -72,6 +72,8 @@ O script `job_exec.py` é o ponto de entrada da ferramenta. Ele deve ser executa
 | Opção | Comando Longo | Descrição |
 | :--- | :--- | :--- |
 | | `--mem` | Quantidade de memória solicitada no SLURM (ex: `16G`). |
+| | `--time` | Especifica o tempo máximo para o job, valor padrão `0-00:20:00` (`dias-horas:minutos:segundos`). |
+| | `--exclusive` | Ativa a execução exclusiva, no nodo sequana selecionado, atenção pois gasta mais recursos. |
 | | `--batch_script` | Nome/Caminho de um script `.sh` customizado que sobrepõe o gerado automaticamente. |
 | | `--gpus` | (Obrigatório se `--modo=openoff`) Número de GPUs solicitadas. (WIP) |
 | | `--teams` | (Obrigatório se `--modo=openoff`) Configura o número de times na diretiva Offload. (WIP) |
@@ -83,7 +85,6 @@ O script `job_exec.py` é o ponto de entrada da ferramenta. Ele deve ser executa
 | :--- | :--- | :--- |
 | | `--extra_files` | Lista de arquivos (separados por espaço) que devem ser copiados junto com o executável para o diretório temporário (*SCRATCH*). |
 | | `--info` | Texto adicional que será acrescentado ao final do assunto no e-mail de notificação. |
-| | `--perf` | *Flag*: Se inserido, avisa o script de batch para rodar a extração de hardware `perf stat`. (WIP) |
 | | `--just_email` | *Flag*: Pula a geração de gráficos e filtragem de amostras, apenas enviando os dados puros extraídos para o e-mail cadastrado. |
 
 ---

@@ -61,6 +61,13 @@ def build_command_for_iteration(
     Constroi o comando para rodar uma iteração.
     Retorna uma lista pronta para subprocess.run.
     """
+    sbatch_opts = ["sbatch"]
+
+    if args.exclusive:
+        sbatch_opts.append("--exclusive")
+
+    sbatch_opts.append(f"--time={args.time}")
+
     if is_slurm:
         # Comando sbatch base
         if args.modo == "mpi":
@@ -90,8 +97,7 @@ def build_command_for_iteration(
             script = args.batch_script
 
         cmd = (
-            ["sbatch"]
-            + sbatch_opts
+            sbatch_opts
             + [
                 script,
                 args.exec_name,
@@ -159,6 +165,8 @@ class JobConfig:
     extra_files: List[str]
     batch_script: str
     just_email: bool
+    exclusive: bool
+    time: str
 
     @property
     def exec_name(self) -> str:
@@ -421,20 +429,18 @@ def parse_and_validate() -> JobConfig:
     parser.add_argument("--omp_places", type=str, default="cores")
     parser.add_argument("-a", "--amostras", type=int, default=10)
     parser.add_argument("--passo", type=int, default=5)
-    parser.add_argument("--modo", choices=["mpi", "openmp", "openoff"], default="mpi")
+    parser.add_argument(
+        "--modo", choices=["mpi", "openmp", "openoff"], default="openmp"
+    )
     parser.add_argument("--preload", default="")
     parser.add_argument("--args", default="")
     parser.add_argument("--mem", default="")
     parser.add_argument("--info", default="")
     parser.add_argument("--tipo", choices=["slurm", "local"], default="slurm")
-    parser.add_argument("--nprocs", default="1 2 4 8 16 24 32")
+    parser.add_argument("--nprocs", default="1 2 4 8 16 24 32 48")
     parser.add_argument("--teams", type=int)
     parser.add_argument("--gpus", type=int)
-    parser.add_argument(
-        "--perf",
-        action="store_true",
-        help="Coleta métricas de hardware com perf stat ao final",
-    )
+    
     # Argumento extra_files recebe múltiplos valores para copiar
     parser.add_argument(
         "--extra_files",
@@ -458,6 +464,16 @@ def parse_and_validate() -> JobConfig:
         action="store_true",
         help="Executa o just_email() em vez do post_process()",
     )
+
+    parser.add_argument(
+        "--exclusive",
+        action="store_true",
+        help="Aponta se será usado o regime de exclusividade, ou seja, se irá ocupar a sequana inteira selecionada para o job, consome mais recursos",
+    )
+
+    # Tempo máximo especificado pelo sequana_cpu_dev, talvez pensar depois em trocar esse tempo aqui para segundos e então transformar para minutos antes de enviar ao sbatch
+    parser.add_argument("--time", type=str, default="0-00:20:00")
+
     args = parser.parse_args()
 
     # Converte nprocs string para list de ints
@@ -502,6 +518,8 @@ def parse_and_validate() -> JobConfig:
         extra_files=args.extra_files,
         batch_script=args.batch_script,
         just_email=args.just_email,
+        exclusive=args.exclusive,
+        time=args.time,
     )
 
 

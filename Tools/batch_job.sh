@@ -5,7 +5,6 @@
 #SBATCH -p sequana_cpu_dev
 #SBATCH --threads-per-core=1
 #SBATCH --time=00:20:00
-#SBATCH --exclusive
 
 # carregamento do openmpi
 module load openmpi/gnu/4.1.4_sequana
