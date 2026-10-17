@@ -49,8 +49,7 @@ wait_run_cores_close() {
     --amostras "$amostras" \
     --passo "$passo" \
     --tipo slurm \
-    --mem 10G \
-    --perf
+    --mem 10G
   
   mv $SCRATCH/"benchmark_$programn"/sim_data.bin ./"sim_data_${SIZE}_${TEMPO}.bin"
 }
